@@ -6,8 +6,8 @@ This repository hosts common applications related to Web/Database/Security.
 
 Database wrapper for executing secure CRUD operation to SQLITE database.
 Application 1:
-database wrapper written in python accepts database filename(directoty/filename) and table name creates one for the user.
-Provide following methods and attributes:
+database wrapper written in python accepts database filename(directoty/filename) & table name and creates one for the user.
+This wrapper Provides following methods and attributes:
 Attributes:
   - filename: specify current directory/databasefilename.
   - table: specify current tablename
