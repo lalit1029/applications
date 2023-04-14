@@ -1,5 +1,10 @@
 # applications
-This repository hosts common applications related to Web/Database/Security
+This repository hosts common applications related to Web/Database/Security.
+
+
+-----------------------------------
+Application 1
+
 Database wrapper for executing secure CRUD operation to SQLITE database.
 Application 1:
 database wrapper written in python accepts database filename(directoty/filename) and table name creates one for the user.
