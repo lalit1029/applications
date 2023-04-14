@@ -3,7 +3,6 @@ This repository hosts common applications related to Web/Database/Security.
 
 
 -----------------------------------
-Application 1
 
 Database wrapper for executing secure CRUD operation to SQLITE database.
 Application 1:
