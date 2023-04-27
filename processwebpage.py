@@ -20,28 +20,18 @@ class processwebpage():
         testhtml= "<html><head><link rel='shortcut icon' href='#' /></head><body><div id=1234><p style='bold'>This is default response from server</p></div><div></div></body></html>"
         tagparams={}
         indexedhtml={}
-        #print("HTMLContent:" + HTMLcontent)
-        #compiledtagsre= re.compile(Tagsname,re.IGNORECASE)
         try:
             Tagsnamere =re.finditer(Tagsname,self.HTMLContent["Default"],re.DOTALL)
             for Tags in Tagsnamere:
-                #print("Tags Groups:")
-                #print(Tags.groups())
                 Tagsattributes="(\<" + Tags.groups()[0] +"(\s(?P<attributename>[a-zA-Z0-9]+?)=(?P<attrbutevalue>.*?))+?\s?\/?\>$)"
                 Tagsboundary= "(?P<tagboundary><"+Tags.groups()[0]+".*\<\/"+Tags.groups()[0]+"\>)"
                 Javascriptids="^(?P<javascript>\<(script).*?\>.*?\<\/\2\>)"
-                #print(Tags.groupdict())
-                #print("found at:")
-                #print(Tags.span())
-                #print("TagsBoundary:")
                 TagsboundarySearch=re.search(Tagsboundary,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
                 if TagsboundarySearch!=None:
-                    #print(TagsboundarySearch.groupdict())
                     check="Long"
                 else:
                     Tagsboundary2= "(?P<tagboundary>\s*?\<"+Tags.groups()[0]+".*?(\/\>))"
                     Tagsboundary2Search=re.search(Tagsboundary2,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
-                    #print(Tagsboundary2Search.groupdict())
                     check="Short"
                 Tagattributes= "(?P<tagattributes>\<"+Tags.groups()[0]+".*?(\>))"
                 if(check=="Long"):
@@ -57,16 +47,10 @@ class processwebpage():
                             TagsattributesSplit2=re.split("\=",TagsattributesSplit1[i].strip('["\'/>]'))
                             print (TagsattributesSplit2)
                             TagsattributesSplit3[0].append(TagsattributesSplit2)
-                        #    if(TagsattributesSplit2[1]!=None):
-                        #        (TagsattributesSplit3["attributes"])[TagsattributesSplit2[0]]=TagsattributesSplit2[1]
-                        #    else: TagsattributesSplit3["attributes"]["closingparamters"]=TagsattributesSplit2[0]
                         else:
                             continue
                         i+=1
-                    #print(TagsattributesSearch.groups())
                     TagsattributesSplit3[1].append(TagsboundarySearch.groups(1)[0])
-                    #print("tagattributes:")
-                    #print(TagsattributesSplit3)
                 else:
                     TagsattributesSearch=re.search(Tagsattributes,Tagsboundary2Search.groups()[0][Tagsboundary2Search.start():],re.DOTALL)
                     Tagattributes2='(?P<attributename>(\w\d_-)*)\=(?<attributevalue>(\w\d_-\\\/\.\?)*)'
@@ -80,15 +64,10 @@ class processwebpage():
                         #print (TagsattributesSplit2)
                         if(TagsattributesSplit2!=None):
                             TagsattributesSplit3[0].append(TagsattributesSplit2)
-                            #if(TagsattributesSplit2[1]!=None):
-                            #    (TagsattributesSplit3["attributes"])[TagsattributesSplit2[0]]=TagsattributesSplit2[1]
-                            #else: (TagsattributesSplit3["attributes"])["closingparamters"]=TagsattributesSplit2[0]
                         else:
                             continue
                         i+=1
-                    #print("tagattributes:")
                     TagsattributesSplit3[1].append(Tagsboundary2Search.groups()[0])
-                    #print (TagsattributesSplit3)
                 indexedhtml[(Tags.groups()[0]+str(Tags.start())+ "-" + str(Tags.end()))]=TagsattributesSplit3
         finally:
             return indexedhtml
@@ -97,7 +76,6 @@ class processwebpage():
             num=1
             span=[0,0]
             tag=""
-            print(params["Tags"])
             for c in params["Tags"]:
                     print(ord(c))
                     if ((ord(c)>=97 and ord(c)<=122) or (ord(c) >= 65 and ord(c) <= 90)):
@@ -112,20 +90,16 @@ class processwebpage():
                         span[1]=(span[1]*10) + int(c)
                     else:
                         break
-            print (tag)
-            print(span)
             indexedhtml= self.SearchHTML()
             print(indexedhtml)
             tagboundaryinitial= len(indexedhtml[params["Tags"]][1])
             updatedattributes=""
             attributestring=""
             for keys in params:
-                print(keys)
                 match keys:
                     case "attributename":
                         if(params["attributename"]==None):
                             continue
-                        print ("attributesname printed")
                         i=0
                         check=0
                         for attributes in indexedhtml[params["Tags"]][0]:
@@ -141,8 +115,6 @@ class processwebpage():
                             if(len(attribute)==2):
                                 attributestring+= attribute[0] + "=" + '"' + attribute[1] + '" '
                         updatedattributes= "<" + tag + " " + attributestring + "/>"
-                        print("Updated:")
-                        print(updatedattributes)
                         break
                     case "attributevalue":
                         if(params["attributename"]==None):
