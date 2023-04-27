@@ -1,5 +1,5 @@
 # applications
-This repository hosts common applications related to Web/Database/Security.
+This repository hosts software applications in Security/Web applications/Network technologies.
 
 
 -----------------------------------
