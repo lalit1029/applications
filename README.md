@@ -1,5 +1,5 @@
 # applications
-This repository hosts software applications in Security/Web applications/Network technologies.
+This repository hosts software applications in Security/Web applications/Network technologies. Application are intented for good use. Please do not use this code for any malicious purpose.
 
 
 -----------------------------------
@@ -22,3 +22,6 @@ Methods:
   - retrieve_row(id): retreieve row with Row id=id 
   - retrieve_rows(): retrieve all rows in table
   - def countrecs(): Count total records.
+  
+  Application 2:
+  ProcessWebpage is python application used to make changes to the HTML page dynamically while updating HTML attributes, HTML tag content etc. Still, I am adding more functioanlity to it. 
