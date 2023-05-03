@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''Code By: Lalit jagotra'''
+
 import sqlite3
 import sys
 class database:
@@ -29,10 +29,14 @@ class database:
         print("done")
     def create_table(self,columns):
         #This method is used for creating table
-        self.db.execute('drop table if exists {}'.format(self.table,columns))
+        self.db.execute('drop table if exists {}'.format(self.table))
         l = len(columns)
-        query = 'create table {} ('.format(self.table) + '? '*l + ')'
-        self.db.execuete(query,columns) 
+        query = 'create table ' + self.table + ' ('
+        for key in columns.keys():
+            query += key + ' ' + columns[key] + ', '
+        query=query[:len(query)-2]
+        query+= ' )'
+        self.cursor= self.db.execute(query)
     def insert(self,columns):
         listk = sorted(columns.keys())
         listv = [columns[k] for k in listk]
@@ -44,16 +48,17 @@ class database:
         self.db.execute(query,(id,))
         self.db.commit()
     def update(self,id,columns):
-        #listk = sorted(columns.keys())
-        #listv = [columns[v] for v in listk]
-        for k in columns.keys():
-            query = 'update {} set {} = {} where ROW_ID =?'.format(self.table,k,columns[k])
-            self.db.execute(query,(id,))
-        self.db.commit()
+        try:
+            updaterow=self.retrieve_row(id)
+            for key in columns.keys():    
+                updaterow[key]= columns[key]
+            self.delete(id)
+            self.insert(updaterow)
+        finally:
+            self.db.commit()
     def retrieve_row(self,id):
         query = 'select * from {} where ROW_ID = ?'.format(self.table)
         self.cursor = self.db.execute(query,(id,))
-        #print(self.cursor.fetchone())
         return dict(self.cursor.fetchone())
     def retrieve_rows(self):
         query = 'select * from {}'.format(self.table)
@@ -73,19 +78,17 @@ def main():
     db = database(filename='test',table='test')
     db.create_database()
     query = 'drop table if exists test'
-    db.sql_noparam(query)
-    query = 'create table test (ROW_ID int, one int, two int, three int )'
-    db.sql_noparam(query)
+    db.create_table(dict(ROW_ID= "int", one= "int",two= "int",three="int"))
     db.insert(dict(ROW_ID = 101, one = 1, two = 2,three = 3))
     db.insert(dict(ROW_ID = 102, one = 101, two = 102,three = 103))
     db.insert(dict(ROW_ID = 103, one = 10, two = 20,three = 30))
     db.insert(dict(ROW_ID = 104, one = 400, two = 402,three = 403))
     db.delete(104)
     print(db.retrieve_rows())                
-    db.update(102, dict(one = 10, two = 20, three = 300))
+    db.update(102, {"one":10, "two": 20, "three": 300})
     print("table after update")
     print(db.retrieve_rows())
     print("this the one{}".format(db.retrieve_row(101)))
     count = db.countrecs()
     print (count)
-if __name__ == '__main__':main()
+#if __name__ == '__main__':main()
