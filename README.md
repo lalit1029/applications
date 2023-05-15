@@ -24,4 +24,23 @@ Methods:
   - def countrecs(): Count total records.
   
   Application 2:
-  ProcessWebpage is python application used to make changes to the HTML page dynamically while updating HTML attributes, HTML tag content etc. Still, I am adding more functioanlity to it. 
+  ProcessWebpage is **python module** used for indexing HTML code and make changes to the HTML page dynamically while updating HTML attributes, HTML tag content etc.
+  - init(): initializes the object variable:
+      - Type:Dict
+      - Name:HTMLContent
+   -  Instance attributes:
+   -  Instance methods:  
+       - SearchHTML(): This method is used for indexing HTML page  base on HTML Tags, respective Tagattributes and Tagboundary.
+          - Return: IndexedHTMLContent
+       - UpdateHTMLContent(): This method is used for indexing HTML page  base on HTML Tags, respective Tagattributes and Tagboundary.
+          - Arguments:
+              - (Dict)Params:
+                  - keys: 
+                    - (string)Tags
+                    - (string)attributename
+                    - (string)attributevalue
+                    - (string)tagcontent
+                    - (string)tagcontentoffset
+                    - (string)"javascript"
+                    - (string)"javascriptoffset"
+          - Retrun: HTMLContent["Updated"]
