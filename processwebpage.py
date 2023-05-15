@@ -1,11 +1,13 @@
 '''Code By: Lalit jagotra'''
 from databasev2 import database
+from urllib import request
 import string
 import re
 import fileinput
 import json
 
-class processwebpage():
+
+class ProcessWebpage:
     def __init__(self, HTMLContent):
         self.HTMLContent=HTMLContent
 
@@ -14,69 +16,89 @@ class processwebpage():
         db2.create_database()
         query = 'drop table if exists Indexpage'
         db2.sql_noparam(query)
-        #query = 'create table Indexpage (ROW_ID int, tagname string, Tagnum int, index int, attributes dict, innerhtmloffset int)'
-        #db2.sql_noparam(query)
         Tagsname= "(?P<tagname>(?<=\<)\w+)"
         Tagsboundary="(<\tagname.*?[(\>)|(</\tagname>)])"
         testhtml= "<html><head><link rel='shortcut icon' href='#' /></head><body><div id=1234><p style='bold'>This is default response from server</p></div><div></div></body></html>"
         tagparams={}
         indexedhtml={}
         try:
-            Tagsnamere =re.finditer(Tagsname,self.HTMLContent["Default"],re.DOTALL)
-            for Tags in Tagsnamere:
-                Tagsattributes="(\<" + Tags.groups()[0] +"(\s(?P<attributename>[a-zA-Z0-9]+?)=(?P<attrbutevalue>.*?))+?\s?\/?\>$)"
-                Tagsboundary= "(?P<tagboundary><"+Tags.groups()[0]+".*\<\/"+Tags.groups()[0]+"\>)"
-                Javascriptids="^(?P<javascript>\<(script).*?\>.*?\<\/\2\>)"
-                TagsboundarySearch=re.search(Tagsboundary,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
-                if TagsboundarySearch!=None:
-                    check="Long"
-                else:
-                    Tagsboundary2= "(?P<tagboundary>\s*?\<"+Tags.groups()[0]+".*?(\/\>))"
-                    Tagsboundary2Search=re.search(Tagsboundary2,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
-                    check="Short"
-                Tagattributes= "(?P<tagattributes>\<"+Tags.groups()[0]+".*?(\>))"
-                if(check=="Long"):
-                    TagsattributesSearch=re.search(Tagattributes,TagsboundarySearch.groups()[0][TagsboundarySearch.start():])
-                    Tagattributes2='(?P<attributename>(\w\d_-)*)\=(?<attributevalue>(\w\d_-\\\/\.\?)*)'
-                    Tagattributes2='\s'
+            Tagsnamere =re.finditer(Tagsname,str(self.HTMLContent["Default"]),re.DOTALL)
+        except error as e:
+            print("Error parsing HTML:{}".format(e))
+        scriptcount=0
+        scriptcheck=0
+        for Tags in Tagsnamere:
+            if scriptcheck==1  and Tags.start()< scriptoffset and Tags.groups()[0]!="script":
+                continue
+            elif scriptcheck==1 and Tags.start() > scriptoffset and Tags.groups()[0]!="script":
+                scriptcheck==0
+                scriptoffset=0
+            print("Tags Groups:{}".format(Tags.groups()[0]))
+            Tagsattributes="(\<" + Tags.groups()[0] +"(\s+(?P<attributename>[a-zA-Z0-9_-]+?)=(?P<attrbutevalue>.*?))*?\s?\/?\>)"
+            Tagattributes= "(?P<tagattributes>\<"+Tags.groups()[0]+".*?(\>))"
+            Tagsboundary= "(?is)(?P<tagboundary>\<"+Tags.groups()[0]+".*?\>.*?(\<\/"+Tags.groups()[0]+"\>))"
+            Tagsboundary2="(?P<tagboundary>\s*?\<" + Tags.groups()[0]+".*?(\/\>))"
+            Tagsboundary3="(?is)(?P<tagboundary>\<"+Tags.groups()[0]+".*?\>.*)"
+            javascriptids="^(?P<javascript>\<(script).*?\>.*?\<\/\2\>)"
+            TagsboundarySearch=re.search(Tagsboundary,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
+            if TagsboundarySearch!=None:
+                check="Long"
+                TagsattributesSearch=re.search(Tagsattributes,TagsboundarySearch.groups()[0],re.DOTALL)
+                print("Tagsattributes:{}".format(TagsattributesSearch))
+                if Tags.groups()[0]=="script" or Tags.groups()[0]=="SCRIPT":
+                    scriptcheck=1
+                    scriptoffset=(Tags.start()-1) + len(TagsboundarySearch.groups()[0])
+            elif (TagsboundarySearch==None and re.search(Tagsboundary2,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL) != None):
+                Tagsboundary2Search = re.search("(?P<tagboundary>\s*?\<" + Tags.groups()[0] + ".*?(\/\>))", self.HTMLContent["Default"][Tags.start() - 1:], re.DOTALL)
+                check="Short"
+            else:
+                TagsboundarySearch= re.search(Tagsboundary3,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
+                check="Long"
+            if(check=="Long"):
+                Tagattributes2='\s+'
+                try:
                     TagsattributesSplit1=re.split(Tagattributes2,TagsattributesSearch.groups()[0])
-                    TagsattributesSplit2=[]
-                    TagsattributesSplit3=[[],[]]
-                    i=1
-                    while(i<=(len(TagsattributesSplit1)-1)):
-                        if(TagsattributesSplit2!=None):
-                            TagsattributesSplit2=re.split("\=",TagsattributesSplit1[i].strip('["\'/>]'))
-                            print (TagsattributesSplit2)
-                            TagsattributesSplit3[0].append(TagsattributesSplit2)
-                        else:
-                            continue
-                        i+=1
-                    TagsattributesSplit3[1].append(TagsboundarySearch.groups(1)[0])
+                except ValueError.args as e:
+                    print("Error parsing:{}".format(e))
                 else:
-                    TagsattributesSearch=re.search(Tagsattributes,Tagsboundary2Search.groups()[0][Tagsboundary2Search.start():],re.DOTALL)
-                    Tagattributes2='(?P<attributename>(\w\d_-)*)\=(?<attributevalue>(\w\d_-\\\/\.\?)*)'
-                    Tagattributes2='\s'
-                    TagsattributesSplit1=re.split(Tagattributes2,TagsattributesSearch.groups()[0])
-                    TagsattributesSplit2=[]
-                    TagsattributesSplit3=[[],[]]
-                    i=1
-                    while(i<=(len(TagsattributesSplit1)-1)):
-                        TagsattributesSplit2=re.split("\=",str(TagsattributesSplit1[i]))
-                        #print (TagsattributesSplit2)
-                        if(TagsattributesSplit2!=None):
-                            TagsattributesSplit3[0].append(TagsattributesSplit2)
-                        else:
-                            continue
+                    print("Value error No attributes found!")
+                TagsattributesSplit2=[]
+                TagsattributesSplit3=[[],[]]
+                i=1
+                while(i<=(len(TagsattributesSplit1)-1)):
+                    TagsattributesSplit2=re.split(r"\=",TagsattributesSplit1[i].strip('["\'/>]'))
+                    if(TagsattributesSplit2!=None):
+                        TagsattributesSplit3[0].append(TagsattributesSplit2)
+                    else:
                         i+=1
-                    TagsattributesSplit3[1].append(Tagsboundary2Search.groups()[0])
-                indexedhtml[(Tags.groups()[0]+str(Tags.start())+ "-" + str(Tags.end()))]=TagsattributesSplit3
-        finally:
-            return indexedhtml
+                        continue
+                    i+=1
+                TagsattributesSplit3[1].append(TagsboundarySearch.groups(1)[0])
+            else:
+                TagsattributesSearch=re.search(Tagsattributes,Tagsboundary2Search.groups()[0][Tagsboundary2Search.start():],re.DOTALL)
+                Tagattributes2='(?P<attributename>(\w\d_-)*)\=(?<attributevalue>(\w\d_-\\\/\.\?)*)'
+                Tagattributes2='\s+'
+                TagsattributesSplit1=re.split(Tagattributes2,TagsattributesSearch.groups()[0])
+                TagsattributesSplit2=[]
+                TagsattributesSplit3=[[],[]]
+                i=1
+                while(i<=(len(TagsattributesSplit1)-1)):
+                    TagsattributesSplit2=re.split(r"\=",str(TagsattributesSplit1[i]),re.DEBUG)
+                    if(TagsattributesSplit2!=None):
+                        TagsattributesSplit3[0].append(TagsattributesSplit2)
+                    else:
+                        continue
+                    i+=1
+                TagsattributesSplit3[1].append(Tagsboundary2Search.groups()[0])
+            indexedhtml[(Tags.groups()[0]+str(Tags.start())+ "-" + str(Tags.end()))]=TagsattributesSplit3
+            check=None
+        return indexedhtml
 
     def UpdateHTMLContent(self, params):
             num=1
             span=[0,0]
             tag=""
+            print(params["Tags"])
             for c in params["Tags"]:
                     print(ord(c))
                     if ((ord(c)>=97 and ord(c)<=122) or (ord(c) >= 65 and ord(c) <= 90)):
@@ -91,16 +113,20 @@ class processwebpage():
                         span[1]=(span[1]*10) + int(c)
                     else:
                         break
+            print (tag)
+            print(span)
             indexedhtml= self.SearchHTML()
             print(indexedhtml)
             tagboundaryinitial= len(indexedhtml[params["Tags"]][1])
             updatedattributes=""
             attributestring=""
             for keys in params:
+                print(keys)
                 match keys:
                     case "attributename":
                         if(params["attributename"]==None):
                             continue
+                        print ("attributesname printed")
                         i=0
                         check=0
                         for attributes in indexedhtml[params["Tags"]][0]:
@@ -116,6 +142,8 @@ class processwebpage():
                             if(len(attribute)==2):
                                 attributestring+= attribute[0] + "=" + '"' + attribute[1] + '" '
                         updatedattributes= "<" + tag + " " + attributestring + "/>"
+                        print("Updated:")
+                        print(updatedattributes)
                         break
                     case "attributevalue":
                         if(params["attributename"]==None):
@@ -143,12 +171,16 @@ class processwebpage():
             
 def main():
     wfile={"Default":"", "Updated":""}
-    with fileinput.input(files='C:/Python_Files//Application/HTML/index.html',mode='r') as input:
+    with fileinput.input(files='C:/Python_Files//Application/HTML/index1.html',mode='r') as input:
                 for line in input:
                     wfile["Default"]+=line
+    indexedhtml=ProcessWebpage(wfile)
+    indexedhtmlcontent=indexedhtml.SearchHTML()
+    for keys in indexedhtmlcontent:
+        print("Keys:{}  Tagattributes: {}    Tagboundary: {}".format(keys,indexedhtmlcontent[keys][0], indexedhtmlcontent[keys][1]))
+    #except error.HTTPError as e:
+    #    print(e.fp.read(),e.code)
     print("Original Web content:" + wfile["Default"])
-    indexhtml1= processwebpage(wfile)
-    print("Updated Web content:")
-    print(indexhtml1.UpdateHTMLContent({"Tags": "body210-214" ,"attributename" : None, "attributevalue": None,"tagcontent": "<br></br>", "tagcontentoffset":71 , "javascript": None, "javascriptoffset":None}))
+    print(indexedhtml.UpdateHTMLContent({"Tags": "body7008-7012" ,"attributename" : None, "attributevalue": None,"tagcontent": "<br>This is an updated content</br>", "tagcontentoffset":21 , "javascript": None, "javascriptoffset":None}))
      
 if __name__=="__main__":main()
