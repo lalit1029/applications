@@ -183,4 +183,4 @@ def main():
     print("Original Web content:" + wfile["Default"])
     print(indexedhtml.UpdateHTMLContent({"Tags": "body7008-7012" ,"attributename" : None, "attributevalue": None,"tagcontent": "<br>This is an updated content</br>", "tagcontentoffset":21 , "javascript": None, "javascriptoffset":None}))
      
-if __name__=="__main__":main()
+#if __name__=="__main__":main()
