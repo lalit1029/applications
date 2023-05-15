@@ -44,3 +44,8 @@ Methods:
                     - (string)"javascript"
                     - (string)"javascriptoffset"
           - Retrun: HTMLContent["Updated"]
+
+Application 3: Secure web development framework which also uses processWebpage module
+
+Work in progress.
+
