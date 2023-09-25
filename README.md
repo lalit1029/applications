@@ -1,9 +1,8 @@
 # applications
-This repository hosts software applications in Security/Web applications/Network technologies. Application are intented for good use. Please do not use this code for any malicious purpose.
+This repository hosts software applications in Security/Web applications/Network technologies. Please do not use this code for any malicious purpose.
 
 
 -----------------------------------
-
 Database wrapper for executing secure CRUD operation to SQLITE database.
 Application 1:
 database wrapper written in python accepts database filename(directoty/filename) & table name and creates one for the user.
