@@ -4,7 +4,7 @@ This repository hosts software applications in Security/Web applications/Network
 
 -----------------------------------
 Database wrapper for executing secure CRUD operation to SQLITE database.
-Application 1:
+**Application 1:**
 database wrapper written in python accepts database filename(directoty/filename) & table name and creates one for the user.
 This wrapper Provides following methods and attributes:
 Attributes:
@@ -22,7 +22,7 @@ Methods:
   - retrieve_rows(): retrieve all rows in table
   - def countrecs(): Count total records.
   
-  Application 2:
+ ** Application 2:**
   ProcessWebpage is **python module** used for indexing HTML code and make changes to the HTML page dynamically while updating HTML attributes, HTML tag content etc.
   - init(): initializes the object variable:
       - Type:Dict
