@@ -44,7 +44,14 @@ Methods:
                     - (string)"javascriptoffset"
           - Retrun: HTMLContent["Updated"]
 
-Application 3: Secure web development framework which also uses processWebpage module
-
-Work in progress.
+Application 3: Password management Application build to run on user's laptop/desktop or over private LAN network. Files include:
+  -  Simple_Web_Server.py : Runs native python web-server and handles majority of application logic. 
+  -  databasev2.py: Database wrapper to manage and execute CRUD queries to sqlitedatabases.
+  -  processwebpage: Generates dynamic webpages
+  -  2 database files: 
+      -  authenticate
+      -  login
+        
+Application 4: Secure web development framework which also uses processWebpage module
+  Work in progress.
 
