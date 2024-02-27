@@ -1,4 +1,3 @@
-'''Code By: Lalit jagotra'''
 from databasev2 import database
 from urllib import request
 import string
@@ -9,11 +8,13 @@ import json
 
 class ProcessWebpage:
     def __init__(self, HTMLContent):
-        self.HTMLContent=HTMLContent
+        self.HTMLContent= HTMLContent
+        self.indexedhtml=dict()
 
     def SearchHTML(self):
-        db2=database(filename= "C:\Python_Files\Application/HTMLindexing", table="Indexpage")
-        db2.create_database()
+        #print("SearchHTML code...HTMLCOntent:{}".format(self.HTMLContent))
+        db2=database(filename= "C:/Python_Files\Password_Management/Application/HTMLindexing", table="Indexpage")
+        db2.connect_database()
         query = 'drop table if exists Indexpage'
         db2.sql_noparam(query)
         Tagsname= "(?P<tagname>(?<=\<)\w+)"
@@ -23,7 +24,7 @@ class ProcessWebpage:
         indexedhtml={}
         try:
             Tagsnamere =re.finditer(Tagsname,str(self.HTMLContent["Default"]),re.DOTALL)
-        except error as e:
+        except AttributeError as e:
             print("Error parsing HTML:{}".format(e))
         scriptcount=0
         scriptcheck=0
@@ -40,16 +41,28 @@ class ProcessWebpage:
             Tagsboundary2="(?P<tagboundary>\s*?\<" + Tags.groups()[0]+".*?(\/\>))"
             Tagsboundary3="(?is)(?P<tagboundary>\<"+Tags.groups()[0]+".*?\>.*)"
             javascriptids="^(?P<javascript>\<(script).*?\>.*?\<\/\2\>)"
-            TagsboundarySearch=re.search(Tagsboundary,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
+            try:
+                TagsboundarySearch=re.search(Tagsboundary,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
+            except AttributeError as e:
+                print("Tag Boundary not Found:".format(e))
+                pass
             if TagsboundarySearch!=None:
                 check="Long"
-                TagsattributesSearch=re.search(Tagsattributes,TagsboundarySearch.groups()[0],re.DOTALL)
-                print("Tagsattributes:{}".format(TagsattributesSearch))
+                try:
+                    TagsattributesSearch=re.search(Tagsattributes,TagsboundarySearch.groups()[0],re.DOTALL)
+                except AttributeError as e:
+                    print("Error attribute not forund:{}".format(e))
+                    pass
+                #print("Tagsattributes:{}".format(TagsattributesSearch))
                 if Tags.groups()[0]=="script" or Tags.groups()[0]=="SCRIPT":
                     scriptcheck=1
                     scriptoffset=(Tags.start()-1) + len(TagsboundarySearch.groups()[0])
             elif (TagsboundarySearch==None and re.search(Tagsboundary2,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL) != None):
-                Tagsboundary2Search = re.search("(?P<tagboundary>\s*?\<" + Tags.groups()[0] + ".*?(\/\>))", self.HTMLContent["Default"][Tags.start() - 1:], re.DOTALL)
+                try:
+                    Tagsboundary2Search = re.search("(?P<tagboundary>\s*?\<" + Tags.groups()[0] + ".*?(\/\>))", self.HTMLContent["Default"][Tags.start() - 1:], re.DOTALL)
+                except AttributeError as e:
+                    print("Attribute Error:{}".format(e))
+                    pass                 
                 check="Short"
             else:
                 TagsboundarySearch= re.search(Tagsboundary3,self.HTMLContent["Default"][Tags.start()-1:],re.DOTALL)
@@ -58,10 +71,9 @@ class ProcessWebpage:
                 Tagattributes2='\s+'
                 try:
                     TagsattributesSplit1=re.split(Tagattributes2,TagsattributesSearch.groups()[0])
-                except ValueError.args as e:
+                except AttributeError as e:
                     print("Error parsing:{}".format(e))
-                else:
-                    print("Value error No attributes found!")
+                    pass
                 TagsattributesSplit2=[]
                 TagsattributesSplit3=[[],[]]
                 i=1
@@ -90,32 +102,33 @@ class ProcessWebpage:
                         continue
                     i+=1
                 TagsattributesSplit3[1].append(Tagsboundary2Search.groups()[0])
-            indexedhtml[(Tags.groups()[0]+str(Tags.start())+ "-" + str(Tags.end()))]=TagsattributesSplit3
+            self.indexedhtml[(Tags.groups()[0]+str(Tags.start())+ "-" + str(Tags.end()))]=TagsattributesSplit3
             check=None
-        return indexedhtml
-
+        return self.indexedhtml
+        
     def UpdateHTMLContent(self, params):
             num=1
             span=[0,0]
             tag=""
             print(params["Tags"])
             for c in params["Tags"]:
-                    print(ord(c))
+                    #print(ord(c))
                     if ((ord(c)>=97 and ord(c)<=122) or (ord(c) >= 65 and ord(c) <= 90)):
                         tag+=c
                     elif((ord(c)>= 48 and ord(c)<= 57) and num==1):
-                        print("%s:%d","span0:",int(c))
+                        #print("%s:%d","span0:",int(c))
                         span[0]=(span[0]*10)+int(c)
                     elif(c=='-'):
                         num=2
                     elif((ord(c)>= 48 and ord(c)<= 57) and num==2):
-                        print("%s:%d","span0:",int(c))
+                        #print("%s:%d","span0:",int(c))
                         span[1]=(span[1]*10) + int(c)
                     else:
                         break
-            print (tag)
-            print(span)
+            #print (tag)
+            #print(span)
             indexedhtml= self.SearchHTML()
+            print("Indexed HTML content:")
             print(indexedhtml)
             tagboundaryinitial= len(indexedhtml[params["Tags"]][1])
             updatedattributes=""
@@ -126,7 +139,7 @@ class ProcessWebpage:
                     case "attributename":
                         if(params["attributename"]==None):
                             continue
-                        print ("attributesname printed")
+                        #print ("attributesname printed")
                         i=0
                         check=0
                         for attributes in indexedhtml[params["Tags"]][0]:
@@ -142,8 +155,8 @@ class ProcessWebpage:
                             if(len(attribute)==2):
                                 attributestring+= attribute[0] + "=" + '"' + attribute[1] + '" '
                         updatedattributes= "<" + tag + " " + attributestring + "/>"
-                        print("Updated:")
-                        print(updatedattributes)
+                        #print("Updated:")
+                        #print(updatedattributes)
                         break
                     case "attributevalue":
                         if(params["attributename"]==None):
@@ -159,7 +172,7 @@ class ProcessWebpage:
                         break
                     case default:
                         continue
-            print(span)
+            #print(span)
             self.HTMLContent["Updated"]= self.HTMLContent["Default"][:span[0]-1]
             if(params["attributename"]!=None):
                 self.HTMLContent["Updated"]+=updatedattributes 
@@ -171,7 +184,7 @@ class ProcessWebpage:
             
 def main():
     wfile={"Default":"", "Updated":""}
-    with fileinput.input(files='C:/Python_Files//Application/HTML/index1.html',mode='r') as input:
+    with fileinput.input(files='C:/Python_Files/Password_Management/Application/HTML/index.html',mode='r') as input:
                 for line in input:
                     wfile["Default"]+=line
     indexedhtml=ProcessWebpage(wfile)
@@ -181,6 +194,6 @@ def main():
     #except error.HTTPError as e:
     #    print(e.fp.read(),e.code)
     print("Original Web content:" + wfile["Default"])
-    print(indexedhtml.UpdateHTMLContent({"Tags": "body7008-7012" ,"attributename" : None, "attributevalue": None,"tagcontent": "<br>This is an updated content</br>", "tagcontentoffset":21 , "javascript": None, "javascriptoffset":None}))
+    print(indexedhtml.UpdateHTMLContent({"Tags": "body341-345" ,"attributename" : None, "attributevalue": None,"tagcontent": "<br>This is inserted text!!!</br>", "tagcontentoffset":21 , "javascript": None, "javascriptoffset":None}))
      
 #if __name__=="__main__":main()
