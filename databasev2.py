@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-'''Created By: Lalit Jagotra'''
+''' 
+Publisher name: Lalit Jagotra
+Publisher's contact: lalit.jagotra@gmail.com
+ 
+'''
 import sqlite3
 import sys
 import secrets
