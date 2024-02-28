@@ -1,7 +1,7 @@
-# applications
+# Applications
 This repository hosts software applications in Security/Web applications/Network technologies. Please do not use this code for any malicious purpose.
-
-
+Publisher Name: Lalit Jagotra
+Publisher Contact: lalit.jagotra@gmail.com
 -----------------------------------
 Database wrapper for executing secure CRUD operation to SQLITE database.
 **Application 1:**
