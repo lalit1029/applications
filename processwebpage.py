@@ -1,5 +1,5 @@
 '''Publisher's Name: Lalit Jagotra
-Publisher's contact: Lalit Jagotra'''
+Publisher's contact: Lalit.Jagotra@gmail.com'''
 
 from databasev2 import database
 from urllib import request
