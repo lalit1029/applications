@@ -1,6 +1,8 @@
 '''
         Application Name: Password Manager Application
-        Created By: Lalit Jagotra
+        Publisher name: Lalit Jagotra
+        Publisher's contact: lalit.jagotra@gmail.com
+ 
 '''
 import http.server
 import socketserver
