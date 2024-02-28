@@ -1,4 +1,5 @@
-'''Created By: Lalit Jagotra'''
+'''Publisher's Name: Lalit Jagotra
+Publisher's contact: Lalit Jagotra'''
 
 from databasev2 import database
 from urllib import request
