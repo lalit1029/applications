@@ -1,5 +1,5 @@
 # Applications
-This repository hosts software applications in Security/Web applications/Network technologies. Please do not use this code for any malicious purpose.
+This repository hosts software applications geared towards Security/Web applications/Network technologies. Use of this code is strictly recommended for legitimate user only.
 Publisher Name: Lalit Jagotra
 Publisher Contact: lalit.jagotra@gmail.com
 -----------------------------------
